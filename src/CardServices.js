@@ -1,5 +1,8 @@
 const request = require('request');
 
+var FACE_TO_FACE_ENDPOINT = "https://cors-anywhere.herokuapp.com/https://www.facetofacegames.com/products/multi_search";
+var WIZARDS_ENDPOINT = "https://cors-anywhere.herokuapp.com/https://kanatacg.crystalcommerce.com/products/multi_search";
+
 function getElementsByXPath(doc, path){
     return doc.evaluate(path, doc, null, XPathResult.ANY_TYPE, null);
 }
@@ -69,7 +72,7 @@ function outerHTML(node){
  */
 export const getFaceToFaceCardPrices = async (cards) => {
     return new Promise(function (resolve, reject) {
-        request.post({url:"http://localhost:3000/f2f", form: {query: cards}}, function(error, resp, body) {
+        request.post({url:FACE_TO_FACE_ENDPOINT, form: {query: cards}}, function(error, resp, body) {
             if(error){
                 console.error(error);
                 throw new Error('Something is currently wrong. Please see the console.');
@@ -139,7 +142,7 @@ export const getFaceToFaceCardPrices = async (cards) => {
  */
 export const getWizardsCardPrices = async (cards) => {
     return new Promise(function (resolve, reject) {
-        request.post({url:"http://localhost:3000/wiz", form: {query: cards}}, function(error, resp, body) {
+        request.post({url:WIZARDS_ENDPOINT, form: {query: cards}}, function(error, resp, body) {
             if(error){
                 console.error(error);
                 throw new Error('Something is currently wrong. Please see the console.');

@@ -5,7 +5,6 @@
   "dependencies": {
     "bootstrap": "^4.3.1",
     "gh-pages": "^2.0.1",
-    "http-proxy-middleware": "^0.19.1",
     "react": "^16.8.6",
     "react-autosize-textarea": "^7.0.0",
     "react-bootstrap": "^1.0.0-beta.9",
@@ -14,7 +13,7 @@
     "request": "^2.88.0",
     "xmlhttprequest": "^1.8.0"
   },
-  "homepage":"https://pocable.github.io/MTGPriceFinderCanada",
+  "homepage": "https://pocable.github.io/MTGPriceFinderCanada",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

@@ -127,7 +127,7 @@ export default class App extends React.Component{
         <Col>
           <form onSubmit={this.submitDeckList}>
             <Row>
-              <TextareaAutosize rows = '25' cols='50' style={this.deckListStyle} onChange={this.handleDeckChange} value={this.state.deck} />
+              <TextareaAutosize cols='50' style={this.deckListStyle} onChange={this.handleDeckChange} value={this.state.deck} />
             </Row>
             <Row>
               <input type="submit" style={this.deckListStyle} value="Submit" disabled={this.state.submitDisabled}/>
@@ -137,7 +137,7 @@ export default class App extends React.Component{
         <Col>
           <Row>
             <h2>Cheaper on F2F</h2> 
-            <TextareaAutosize rows = '50' cols = '50' style={this.deckListStyle} value={this.state.cheaperOnF2F} />
+            <TextareaAutosize cols = '50' style={this.deckListStyle} value={this.state.cheaperOnF2F} />
           </Row>
           <Row>
             <h2>Cheaper on WIZ</h2>
