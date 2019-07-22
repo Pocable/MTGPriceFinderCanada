@@ -14,7 +14,7 @@
     "request": "^2.88.0",
     "xmlhttprequest": "^1.8.0"
   },
-  "homepage":"https://yourusername.github.io/repository-name",
+  "homepage":"https://pocable.github.io/MTGPriceFinderCanada",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
