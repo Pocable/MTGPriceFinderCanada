@@ -8,7 +8,7 @@ import {Row, Col, Container} from 'react-bootstrap';
 
 export default class App extends React.Component{
 
-  state = {deck: "", errorState: false, errorMessage: "", infoState: false, infoMessage: "", submitDisabled: false, cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: 0, missingCards: ""};
+  state = {deck: "", errorState: false, errorMessage: "", infoState: false, infoMessage: "", submitDisabled: false, cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: "Submit A Deck!", missingCards: ""};
 
   constructor(){
     super();
@@ -20,10 +20,6 @@ export default class App extends React.Component{
     this.clearErrorState = this.clearErrorState.bind(this);
     this.infoState = this.clearInfoState.bind(this);
     this.arrayToString = this.arrayToString.bind(this);
-  }
-
-  componentDidMount(){
-    document.title = "MTGPriceFinder";
   }
 
   handleDeckChange(event){
@@ -189,11 +185,11 @@ export default class App extends React.Component{
             </Col>
             <Col>
               <Col>
-              <h2>Cheaper on F2F</h2> 
+              <a href="https://www.facetofacegames.com/products/multi_search"><h2>Cheaper on Face to Face</h2></a>
               <TextareaAutosize cols='50' value={this.state.cheaperOnF2F} />
               </Col>
               <Col>
-              <h2>Cheaper on WIZ</h2>
+              <a href="https://kanatacg.crystalcommerce.com/products/multi_search"><h2>Cheaper on Wizards</h2></a>
               <TextareaAutosize cols='50' value={this.state.cheaperOnWiz} />
               </Col>
               <Col>
