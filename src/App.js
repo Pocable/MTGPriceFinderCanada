@@ -40,6 +40,7 @@ export default class App extends React.Component{
 
     if(this.state.deck === ""){
       this.enterErrorState("Decklist shouldn't be empty");
+      this.setState({submitDisabled: false});
       return;
     }
 
@@ -47,8 +48,15 @@ export default class App extends React.Component{
     this.enterInfoState("Loading...");
 
     // Load the prices from the website.
-    var wiz = await getWizardsCardPrices(this.state.deck);
-    var f2f = await getFaceToFaceCardPrices(this.state.deck);
+    try{
+      var wiz = await getWizardsCardPrices(this.state.deck);
+      var f2f = await getFaceToFaceCardPrices(this.state.deck);
+    }catch(err){
+      this.setState({submitDisabled: false});
+      this.enterErrorState("Error: " + err);
+      console.error(err);
+      return;
+    }
 
     var cards = [...new Set([...Object.keys(wiz), ...Object.keys(f2f)])];
     var originalList = this.state.deck.replace(/([0-9][x ]{1,2})/g, "").split("\n");
