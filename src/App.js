@@ -1,18 +1,14 @@
 import React from 'react';
 import './App.css';
-import {Container, Row, Col} from 'react-bootstrap';
 import TextareaAutosize from 'react-autosize-textarea';
 import {Alert} from 'react-bootstrap';
 import {getFaceToFaceCardPrices, getWizardsCardPrices} from './CardServices';
+import './bootstrap.min.css';
+import {Row, Col, Container} from 'react-bootstrap';
 
 export default class App extends React.Component{
 
-  state = {deck: "", errorState: false, errorMessage: "", submitDisabled: false, cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: 0};
-
-  deckListStyle = {
-    fontSize: '10px',
-    margin: '10px',
-  };
+  state = {deck: "", errorState: false, errorMessage: "", infoState: false, infoMessage: "", submitDisabled: false, cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: 0, missingCards: ""};
 
   constructor(){
     super();
@@ -20,6 +16,14 @@ export default class App extends React.Component{
     this.submitDeckList = this.submitDeckList.bind(this);
     this.cardObjectToString = this.cardObjectToString.bind(this);
     this.enterErrorState = this.enterErrorState.bind(this);
+    this.enterInfoState = this.enterInfoState.bind(this);
+    this.clearErrorState = this.clearErrorState.bind(this);
+    this.infoState = this.clearInfoState.bind(this);
+    this.arrayToString = this.arrayToString.bind(this);
+  }
+
+  componentDidMount(){
+    document.title = "MTGPriceFinder";
   }
 
   handleDeckChange(event){
@@ -34,26 +38,29 @@ export default class App extends React.Component{
   async submitDeckList(event){
     event.preventDefault();
     this.setState({submitDisabled: true});
+    window.scrollTo(0,0);
+    this.clearErrorState();
+    this.clearInfoState();
 
     if(this.state.deck === ""){
       this.enterErrorState("Decklist shouldn't be empty");
       return;
     }
 
+    // Set message to let people know we are loading.
+    this.enterInfoState("Loading...");
+
     // Load the prices from the website.
     var wiz = await getWizardsCardPrices(this.state.deck);
     var f2f = await getFaceToFaceCardPrices(this.state.deck);
 
-    //var wiz = {KarnLiberated: 10, CounterSpell: 2};
-    //var f2f = {KarnLiberated: 4, CounterSpell: 5};
-
     var cards = [...new Set([...Object.keys(wiz), ...Object.keys(f2f)])];
-    var originalList = this.state.deck.split("\n");
+    var originalList = this.state.deck.replace(/([0-9][x ]{1,2})/g, "").split("\n");
 
     if(cards.length !== originalList.length){
       this.setState({errorState: true, errorMessage: "Found " + cards.length + " cards out of " + originalList.length + " cards."});
     }
-
+    
     var cheaperOnF2F = {};
     var cheaperOnWiz = {};
     var totalPrice = 0;
@@ -77,11 +84,19 @@ export default class App extends React.Component{
       }
     }
 
+    // Get the cards missing. Lowercase both lists as I am using .includes.
+    originalList = originalList.map(v => {return v.toLowerCase()});
+    cards = cards.map(v => {return v.toLowerCase()});
+    var missing = originalList.filter(v => {
+      return !cards.includes(v.toLowerCase());
+    });
+
     // Update the state.
-    this.setState({cheaperOnF2F: this.cardObjectToString(cheaperOnF2F), 
+    this.setState({cheaperOnF2F: this.cardObjectToString(cheaperOnF2F), missingCards: this.arrayToString(missing),
       cheaperOnWiz: this.cardObjectToString(cheaperOnWiz), totalPrice: totalPrice.toLocaleString('en-US', {style: 'currency', currency: 'CAD'})});
 
-
+    // Clear info state and re-enable the submit.
+    this.clearInfoState();
     this.setState({submitDisabled: false});
 
   }
@@ -95,6 +110,29 @@ export default class App extends React.Component{
     this.setState({errorState: true, errorMessage: message});
   }
 
+  /**
+   * Clear the error state (close it at top of page).
+   */
+  clearErrorState(){
+    this.setState({errorState: false});
+  }
+
+  /**
+   * Enter an info state and display a large message.
+   * @param {The message to be displayed} message 
+   */
+  enterInfoState(message){
+    this.setState({infoState: true, infoMessage: message});
+  }
+
+  /**
+   * Exit the info state (close it at top of page).
+   */
+  clearInfoState(){
+    this.setState({infoState: false});
+  }
+
+
 
   /**
    * Converts a card list to a string to be printed in a box.
@@ -105,7 +143,19 @@ export default class App extends React.Component{
     for(const [key,] of Object.entries(obj)){
       output += key + "\n";
     }
-    return output;
+    return output.trim();
+  }
+
+  /**
+   * Convert an array to a string.
+   * @param {An array.} arry 
+   */
+  arrayToString(arry){
+    var output = "";
+    for(var i = 0; i < arry.length; i++){
+      output += arry[i] + "\n";
+    }
+    return output.trim();
   }
 
   render(){
@@ -115,39 +165,56 @@ export default class App extends React.Component{
         errorPrompt = <Alert variant='danger'>{this.state.errorMessage}</Alert>
     }
 
+    let infoPrompt;
+    if(this.state.infoState){
+      infoPrompt = <Alert variant='warning'>{this.state.infoMessage}</Alert>
+    }
+
     return (
-      <Container>
-      <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossOrigin="anonymous"
-      />
-      {errorPrompt}
-        <Col>
-          <form onSubmit={this.submitDeckList}>
-            <Row>
-              <TextareaAutosize cols='50' style={this.deckListStyle} onChange={this.handleDeckChange} value={this.state.deck} />
-            </Row>
-            <Row>
-              <input type="submit" style={this.deckListStyle} value="Submit" disabled={this.state.submitDisabled}/>
-            </Row>
-          </form>
-        </Col>
-        <Col>
+      <div className="App">
+        {errorPrompt}
+        {infoPrompt}
+        <Container>
           <Row>
-            <h2>Cheaper on F2F</h2> 
-            <TextareaAutosize cols = '50' style={this.deckListStyle} value={this.state.cheaperOnF2F} />
+            <Col>
+              <form onSubmit={this.submitDeckList}>
+                <Col>
+                  <h2>Decklist</h2>
+                  <TextareaAutosize cols='50' onChange={this.handleDeckChange} value={this.state.deck} />
+                </Col>
+                <Col>
+                  <input style={{margin: '20px'}} type="submit" value="Submit" disabled={this.state.submitDisabled}/>
+                </Col>
+              </form>
+            </Col>
+            <Col>
+              <Col>
+              <h2>Cheaper on F2F</h2> 
+              <TextareaAutosize cols='50' value={this.state.cheaperOnF2F} />
+              </Col>
+              <Col>
+              <h2>Cheaper on WIZ</h2>
+              <TextareaAutosize cols='50' value={this.state.cheaperOnWiz} />
+              </Col>
+              <Col>
+              <h2>Total Price: {this.state.totalPrice}</h2>
+              </Col>
+            </Col>
+            <Col>
+              <h2>Missing Cards</h2>
+              <TextareaAutosize cols='50' value={this.state.missingCards}></TextareaAutosize>
+            </Col>
           </Row>
           <Row>
-            <h2>Cheaper on WIZ</h2>
-            <TextareaAutosize cols='50' style={this.deckListStyle} value={this.state.cheaperOnWiz} />
-          </Row> 
-        </Col>
-        <Col>
-          <h2>Total Price: {this.state.totalPrice}</h2>
-        </Col>
-      </Container>
+            <Col>
+              <h4>Disclaimer:</h4>
+              <p> This program ignores sets, conditions, shipping prices, amount of cards and the option of purchasing pre-release cards.
+                It only finds the cheapest card available and shows you where to find it. If you care about condition and art, you should not use this!
+              </p>
+            </Col>
+          </Row>
+          </Container>
+      </div>
     )
   }
 
