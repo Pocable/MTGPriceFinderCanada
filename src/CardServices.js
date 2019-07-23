@@ -127,6 +127,12 @@ export const getFaceToFaceCardPrices = async (cards) => {
                             }
                         }
                     }
+
+                    // If the optimal amount did not change, then there is a desync between values and number of card editions.
+                    if(optimal === 99999999999999.0){
+                        throw new Error("No optimal price was found when one should exist. Card: " + card[0]);
+                    }
+
                     valueIndex += amount;
                     optimal_prices[card[0]] = optimal;
                 }
@@ -191,6 +197,12 @@ export const getWizardsCardPrices = async (cards) => {
                             }
                         }
                     }
+
+                    // If the optimal amount did not change, then there is a desync between values and number of card editions.
+                    if(optimal === 99999999999999.0){
+                        throw new Error("No optimal price was found when one should exist. Card: " + card[0]);
+                    }
+                    
                     valueIndex += amount;
                     optimal_prices[card[0]] = optimal;
                 }
