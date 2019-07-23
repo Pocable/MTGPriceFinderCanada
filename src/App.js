@@ -8,7 +8,7 @@ import {Row, Col, Container} from 'react-bootstrap';
 
 export default class App extends React.Component{
 
-  state = {deck: "", errorState: false, errorMessage: "", infoState: false, infoMessage: "", submitDisabled: false, cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: "Submit A Deck!", missingCards: ""};
+  state = {deck: "", errorState: false, errorMessage: "", infoState: false, infoMessage: "", submitDisabled: false, cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: "", missingCards: "", wizardsCost: "", facetofaceCost: ""};
 
   constructor(){
     super();
@@ -20,6 +20,7 @@ export default class App extends React.Component{
     this.clearErrorState = this.clearErrorState.bind(this);
     this.infoState = this.clearInfoState.bind(this);
     this.arrayToString = this.arrayToString.bind(this);
+    this.formatStringToCurrency = this.formatStringToCurrency.bind(this);
   }
 
   handleDeckChange(event){
@@ -68,6 +69,8 @@ export default class App extends React.Component{
     var cheaperOnF2F = {};
     var cheaperOnWiz = {};
     var totalPrice = 0;
+    var totalWizardsPrice = 0;
+    var totalFaceToFacePrice = 0;
 
     // For each card, find out which service is cheaper and append it to its respective list.
     for(var name of cards){
@@ -75,9 +78,11 @@ export default class App extends React.Component{
       var w_price = 99999999999.0;
       if(name in f2f){
         f_price = f2f[name];
+        totalFaceToFacePrice += f_price;
       }
       if(name in wiz){
         w_price = wiz[name];
+        totalWizardsPrice += w_price;
       }
       if(f_price < w_price){
         cheaperOnF2F[name] = f_price;
@@ -97,12 +102,22 @@ export default class App extends React.Component{
 
     // Update the state.
     this.setState({cheaperOnF2F: this.cardObjectToString(cheaperOnF2F), missingCards: this.arrayToString(missing),
-      cheaperOnWiz: this.cardObjectToString(cheaperOnWiz), totalPrice: totalPrice.toLocaleString('en-US', {style: 'currency', currency: 'CAD'})});
+      cheaperOnWiz: this.cardObjectToString(cheaperOnWiz), totalPrice: this.formatStringToCurrency(totalPrice),
+    wizardsCost: this.formatStringToCurrency(totalWizardsPrice), facetofaceCost: this.formatStringToCurrency(totalFaceToFacePrice)});
 
     // Clear info state and re-enable the submit.
     this.clearInfoState();
     this.setState({submitDisabled: false});
 
+  }
+
+
+  /**
+   * Format a string to match a local string. In this case, CAD.
+   * @param {The string to be formatted.} string 
+   */
+  formatStringToCurrency(string){
+    return string.toLocaleString('en-US', {style: 'currency', currency: 'CAD'});
   }
 
 
@@ -214,6 +229,12 @@ export default class App extends React.Component{
             <Col>
               <h2>Missing Cards</h2>
               <TextareaAutosize cols='50' value={this.state.missingCards}></TextareaAutosize>
+            </Col>
+            <Col>
+            <h2>Using one website </h2>
+              <h4>Face To Face Cost: {this.state.facetofaceCost}</h4>
+              <h4>Wizards Tower Cost: {this.state.wizardsCost}</h4>
+              <p>(If a website is lower than the total cost it may be missing cards)</p>
             </Col>
           </Row>
           <Row>
