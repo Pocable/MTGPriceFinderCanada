@@ -181,9 +181,16 @@ export default class App extends React.Component{
         <Container>
           <Row>
             <Col>
+              <h1>MTGPriceCheck Canada</h1>
+              <p>Enter your deck and this program will search Face to Face and Wizards Tower to compare which card is cheaper at what storefront. You can paste the generated lists into their deck builders and add them to your card.</p>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
               <form onSubmit={this.submitDeckList}>
                 <Col>
                   <h2>Decklist</h2>
+                  <h6>One card per line, formatted either <code>1x Karn Liberated</code>, <code>1 Karn Liberated</code>, or <code>Karn Liberated</code>.</h6>
                   <TextareaAutosize cols='50' onChange={this.handleDeckChange} value={this.state.deck} />
                 </Col>
                 <Col>
@@ -212,9 +219,15 @@ export default class App extends React.Component{
           <Row>
             <Col>
               <h4>Disclaimer:</h4>
-              <p> This program ignores sets, conditions, shipping prices, amount of cards and the option of purchasing pre-release cards.
+              <p> 
+                This program ignores sets, conditions, shipping prices, amount of cards and the option of purchasing pre-release cards.
                 It only finds the cheapest card available and shows you where to find it. If you care about condition and art, you should not use this!
               </p>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <a href="https://github.com/Pocable/MTGPriceFinderCanada/issues"><h1>Report a Problem</h1></a>
             </Col>
           </Row>
           </Container>
