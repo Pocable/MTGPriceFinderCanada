@@ -8,7 +8,7 @@ import {Row, Col, Container} from 'react-bootstrap';
 
 export default class App extends React.Component{
 
-  state = {deck: "", errorState: false, errorMessage: "", infoState: false, infoMessage: "", submitDisabled: false, cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: "", missingCards: "", wizardsCost: "", facetofaceCost: ""};
+  state = {deck: "", errorState: false, errorMessage: "", infoState: false, infoMessage: "", submitDisabled: false, cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: "", missingCards: "", wizardsCost: "", facetofaceCost: "", successState: false, successMessage: ""};
 
   constructor(){
     super();
@@ -17,10 +17,9 @@ export default class App extends React.Component{
     this.cardObjectToString = this.cardObjectToString.bind(this);
     this.enterErrorState = this.enterErrorState.bind(this);
     this.enterInfoState = this.enterInfoState.bind(this);
-    this.clearErrorState = this.clearErrorState.bind(this);
-    this.infoState = this.clearInfoState.bind(this);
     this.arrayToString = this.arrayToString.bind(this);
     this.formatStringToCurrency = this.formatStringToCurrency.bind(this);
+    this.enterSuccessState = this.enterSuccessState.bind(this);
   }
 
   handleDeckChange(event){
@@ -34,10 +33,8 @@ export default class App extends React.Component{
    */
   async submitDeckList(event){
     event.preventDefault();
-    this.setState({submitDisabled: true});
+    this.setState({submitDisabled: true, successState: false, errorState: false, infoState: false});
     window.scrollTo(0,0);
-    this.clearErrorState();
-    this.clearInfoState();
 
     if(this.state.deck === ""){
       this.enterErrorState("Decklist shouldn't be empty");
@@ -62,10 +59,8 @@ export default class App extends React.Component{
     var cards = [...new Set([...Object.keys(wiz), ...Object.keys(f2f)])];
     var originalList = this.state.deck.replace(/([0-9][x ]{1,2})/g, "").split("\n");
 
-    if(cards.length !== originalList.length){
-      this.setState({errorState: true, errorMessage: "Found " + cards.length + " cards out of " + originalList.length + " cards."});
-    }
-    
+
+    // Statistics and values
     var cheaperOnF2F = {};
     var cheaperOnWiz = {};
     var totalPrice = 0;
@@ -93,12 +88,27 @@ export default class App extends React.Component{
       }
     }
 
-    // Get the cards missing. Lowercase both lists as I am using .includes.
+    // Get the cards missing. Lowercase both lists as I am using .includes. Remove any empty cards aswell.
     originalList = originalList.map(v => {return v.toLowerCase()});
     cards = cards.map(v => {return v.toLowerCase()});
     var missing = originalList.filter(v => {
+      if(v === "") { return false; }
       return !cards.includes(v.toLowerCase());
     });
+
+    // If the missing list has a card, then we are missing cards.
+    if(missing.length > 0){
+
+      // Check if we need to append an s to the end or not.
+      var needS = '';
+      if(missing.length !== 1){
+        needS = 's';
+      }
+
+      // Update state.
+      this.setState({errorState: true, errorMessage: "Found " + missing.length + " missing card" + needS + "."});
+    }
+        
 
     // Update the state.
     this.setState({cheaperOnF2F: this.cardObjectToString(cheaperOnF2F), missingCards: this.arrayToString(missing),
@@ -106,8 +116,11 @@ export default class App extends React.Component{
     wizardsCost: this.formatStringToCurrency(totalWizardsPrice), facetofaceCost: this.formatStringToCurrency(totalFaceToFacePrice)});
 
     // Clear info state and re-enable the submit.
-    this.clearInfoState();
-    this.setState({submitDisabled: false});
+    this.setState({submitDisabled: false, infoState: false});
+
+    if(!this.state.errorState){
+      this.enterSuccessState("All cards found!");
+    }
 
   }
 
@@ -130,13 +143,6 @@ export default class App extends React.Component{
   }
 
   /**
-   * Clear the error state (close it at top of page).
-   */
-  clearErrorState(){
-    this.setState({errorState: false});
-  }
-
-  /**
    * Enter an info state and display a large message.
    * @param {The message to be displayed} message 
    */
@@ -145,12 +151,12 @@ export default class App extends React.Component{
   }
 
   /**
-   * Exit the info state (close it at top of page).
+   * Enter a success state and display a large message
+   * @param {The message to be displayed} message 
    */
-  clearInfoState(){
-    this.setState({infoState: false});
+  enterSuccessState(message){
+    this.setState({successState: true,successMessage: message});
   }
-
 
 
   /**
@@ -189,10 +195,16 @@ export default class App extends React.Component{
       infoPrompt = <Alert variant='warning'>{this.state.infoMessage}</Alert>
     }
 
+    let successPrompt;
+    if(this.state.successState){
+      successPrompt = <Alert variant='success'>{this.state.successMessage}</Alert>
+    }
+
     return (
       <div className="App">
         {errorPrompt}
         {infoPrompt}
+        {successPrompt}
         <Container>
           <Row>
             <Col>
