@@ -8,7 +8,9 @@ import {Row, Col, Container} from 'react-bootstrap';
 
 export default class App extends React.Component{
 
-  state = {deck: "", errorState: false, errorMessage: "", infoState: false, infoMessage: "", submitDisabled: false, cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: "", missingCards: "", wizardsCost: "", facetofaceCost: "", successState: false, successMessage: ""};
+  state = {deck: "", errorState: false, errorMessage: "", infoState: false, infoMessage: "", submitDisabled: false, 
+  cheaperOnF2F: "", cheaperOnWiz: "", totalPrice: "CA$0.00", missingCards: "", wizardsCost: "CA$0.00", facetofaceCost: "CA$0.00", 
+  successState: false, successMessage: "", wizCards: 0, f2fCards: 0};
 
   constructor(){
     super();
@@ -113,7 +115,8 @@ export default class App extends React.Component{
     // Update the state.
     this.setState({cheaperOnF2F: this.cardObjectToString(cheaperOnF2F), missingCards: this.arrayToString(missing),
       cheaperOnWiz: this.cardObjectToString(cheaperOnWiz), totalPrice: this.formatStringToCurrency(totalPrice),
-    wizardsCost: this.formatStringToCurrency(totalWizardsPrice), facetofaceCost: this.formatStringToCurrency(totalFaceToFacePrice)});
+    wizardsCost: this.formatStringToCurrency(totalWizardsPrice), facetofaceCost: this.formatStringToCurrency(totalFaceToFacePrice),
+    wizCards: Object.keys(wiz).length, f2fCards: Object.keys(f2f).length});
 
     // Clear info state and re-enable the submit.
     this.setState({submitDisabled: false, infoState: false});
@@ -244,8 +247,8 @@ export default class App extends React.Component{
             </Col>
             <Col>
             <h2>Using one website </h2>
-              <h4>Face To Face Cost: {this.state.facetofaceCost}</h4>
-              <h4>Wizards Tower Cost: {this.state.wizardsCost}</h4>
+              <h4>Face To Face Cost: {this.state.facetofaceCost} - Cards: {this.state.f2fCards}</h4>
+              <h4>Wizards Tower Cost: {this.state.wizardsCost} - Cards: {this.state.wizCards}</h4>
               <p>(If a website is lower than the total cost it may be missing cards)</p>
             </Col>
           </Row>
