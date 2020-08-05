@@ -205,6 +205,7 @@ export default class App extends React.Component{
 
     return (
       <div className="App">
+                <Alert variant='danger'>Unfortunetly, FaceToFace updated their website and no longer has a batch search function. I am unable to update this currently until it's added. Sorry!</Alert>
         {errorPrompt}
         {infoPrompt}
         {successPrompt}
@@ -230,7 +231,7 @@ export default class App extends React.Component{
             </Col>
             <Col>
               <Col>
-              <a href="https://www.facetofacegames.com/products/multi_search"><h2>Cheaper on Face to Face</h2></a>
+              <strike><h2>Cheaper on Face to Face</h2></strike>
               <TextareaAutosize cols='50' value={this.state.cheaperOnF2F} />
               </Col>
               <Col>
