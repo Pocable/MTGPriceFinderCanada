@@ -1,6 +1,9 @@
+# NOTICE
+
+Face to Face and Wizards have both updated their websites and the **application no longer works**. The website will be taken down but this repository will be left public for anyone to modify the code or attempt to revive it. Everything that would need to be changed would be in the CardServices.js class. A starting point would be to update the endpoints, but since Face to Face does not have a batch search anymore and its default card search recommends cards, it would be more difficult to search. Wizards tower just added foil and full art indicators after a dash, which can be easily removed to be updated.
+
 # MTGPriceFinderCanada
-A tool to search both face to face and wizards tower at the same time
-to get the cheapest cards possible.
+A tool to search both face to face and wizards tower at the same time to get the cheapest cards possible.
 
 ## Sidenotes
 This program **ignores** sets, conditions, shipping prices, amount of available cards 
